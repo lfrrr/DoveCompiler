@@ -393,13 +393,13 @@ namespace front
                     auto right_prim = std::dynamic_pointer_cast<ir::PrimitiveDataType>(right->getType());
                     if (left_prim->isInt() && right_prim->isInt())
                     {
-                        auto icmp = std::make_shared<ir::Icmp>(ir::Icmp::IcmpId::EQ, left, right, "eq");
+                        auto icmp = std::make_shared<ir::Icmp>(ir::Icmp::IcmpId::EQ, left, right, ctx_.newVRegName());
                         ctx_.currentBasicBlock->addInstruction(icmp);
                         return std::dynamic_pointer_cast<ir::User>(icmp);
                     }
                     else if (left_prim->isFloat() && right_prim->isFloat())
                     {
-                        auto fcmp = std::make_shared<ir::Fcmp>(ir::Fcmp::FcmpId::EQ, left, right, "eq");
+                        auto fcmp = std::make_shared<ir::Fcmp>(ir::Fcmp::FcmpId::EQ, left, right, ctx_.newVRegName());
                         ctx_.currentBasicBlock->addInstruction(fcmp);
                         return std::dynamic_pointer_cast<ir::User>(fcmp);
                     }
@@ -431,17 +431,13 @@ namespace front
             auto f_bb = ctx_.falseTargetBBStack.top();
             auto t_label = std::make_shared<ir::Label>(t_bb->getJPLabel());
             auto f_label = std::make_shared<ir::Label>(f_bb->getJPLabel());
-            auto bb = std::make_shared<ir::BasicBlock>("_" + ctx_.currentFunction->getName() + "_lAnd_exit_" + std::to_string(ctx_.basicBlockCounter.next()), ir::BasicBlock::BlockType::Default);
 
             auto user = std::any_cast<std::shared_ptr<ir::User>>(context->eqExp()->accept(this)); // Icmp, Fcmp or int StatciValue
             auto br = std::make_shared<ir::Br>(user, t_label, f_label, t_label->getName());
             ctx_.currentBasicBlock->addInstruction(br);
 
-            ctx_.currentFunction->addBasicBlock(bb);
-            ctx_.entryBasicBlock = ctx_.currentBasicBlock;
-            ctx_.currentBasicBlock = bb;
 
-            return std::dynamic_pointer_cast<ir::BasicBlock>(bb);
+            return 0;
         }
         catch (const std::exception &e)
         {
@@ -462,15 +458,14 @@ namespace front
             context->lAndExp()->accept(this);
             ctx_.trueTargetBBStack.pop();
 
+            ctx_.currentFunction->addBasicBlock(bb);
+            ctx_.entryBasicBlock = ctx_.currentBasicBlock;
+            ctx_.currentBasicBlock = bb;
             auto user = std::any_cast<std::shared_ptr<ir::User>>(context->eqExp()->accept(this)); // Icmp, Fcmp or int StatciValue
             auto br = std::make_shared<ir::Br>(user, t_label, f_label, t_label->getName());
             ctx_.currentBasicBlock->addInstruction(br);
 
-            ctx_.currentFunction->addBasicBlock(bb);
-            ctx_.entryBasicBlock = ctx_.currentBasicBlock;
-            ctx_.currentBasicBlock = bb;
-
-            return std::dynamic_pointer_cast<ir::BasicBlock>(bb);
+            return 0;
         }
         catch (const std::exception &e)
         {

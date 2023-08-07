@@ -47,7 +47,7 @@ test_show_ast: res/antlr/SysY.g4 res/antlr/CommonLex.g4
 	antlr4-parse res/antlr/SysY.g4 res/antlr/CommonLex.g4 compUnit tests/${testFileBase}.sysy -gui
 
 test_cat_asm: 
-	cp tests/{testFileBase}.sysy tests/a.cc || g++ -S -O0 -o tests/a.s tests/a.cc
+	cp tests/${testFileBase}.sysy tests/a.cc || g++ -S -O0 -o tests/a.s tests/a.cc
 	cat tests/a.s
 
 test_all:

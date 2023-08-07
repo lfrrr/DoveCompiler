@@ -122,6 +122,16 @@ namespace ir
             }
             throw std::runtime_error("StaticValue::at(size_t idx) is not supported for non-array type");
         }
+
+        size_t getLen() const
+        {
+            if (isArray())
+            {
+                return std::dynamic_pointer_cast<ArrayType>(getType())->getLen();
+            }
+            throw std::runtime_error("StaticValue::getLen() is not supported for non-array type");
+        }
+
         std::shared_ptr<StaticValue> at(std::vector<size_t> idxs) const
         {
             if (isArray())
@@ -140,11 +150,17 @@ namespace ir
             }
             throw std::runtime_error("StaticValue::at(std::vector<size_t> idxs) is not supported for non-array type");
         }
+
         std::vector<std::shared_ptr<StaticValue>> getArray() const
         {
+            std::vector<std::shared_ptr<StaticValue>> vals;
             if (isArray())
             {
-                return array_vals_;
+                for (size_t i = 0; i < std::dynamic_pointer_cast<ArrayType>(getType())->getLen(); i++)
+                {
+                    vals.push_back(at(i));
+                }
+                return vals;
             }
             throw std::runtime_error("StaticValue::getArray() is not supported for non-array type");
         }

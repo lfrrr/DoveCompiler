@@ -16,7 +16,11 @@ namespace asmgen
 
 
 
+
     void genCompUnit(std::shared_ptr<ir::CompUnit> node);
+    std::string globalStaticValue(std::shared_ptr<ir::StaticValue> node);
+    std::string memStaticValue(std::shared_ptr<ir::StaticValue> node);
+
 
     void generate();
 

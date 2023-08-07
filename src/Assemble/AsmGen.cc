@@ -14,6 +14,47 @@ namespace asmgen
         genCompUnit(comp_unit_);
     }
 
+    std::string AsmGenerator::globalStaticValue(std::shared_ptr<ir::StaticValue> node)
+    {
+        std::stringstream s;
+        if (node->isInt())
+        {
+            s << ".word " << node->getInt() << std::endl;
+        }
+        else if (node->isFloat())
+        {
+            s << ".word " << node->getFloat() << std::endl;
+        }
+        else if (node->isArray())
+        {
+            for (auto val : node->getArray())
+            {
+                s << globalStaticValue(val);
+            }
+        }
+        return s.str();
+    }
+
+    std::string AsmGenerator::memStaticValue(std::shared_ptr<ir::StaticValue> node){
+        std::stringstream s;
+        if (node->isInt())
+        {
+            s << node->getInt() << std::endl;
+        }
+        else if (node->isFloat())
+        {
+            s << node->getFloat() << std::endl;
+        }
+        else if (node->isArray())
+        {
+            for (auto val : node->getArray())
+            {
+                s << memStaticValue(val);
+            }
+        }
+        return s.str();
+    }
+
     void AsmGenerator::genCompUnit(std::shared_ptr<ir::CompUnit> node)
     {
         auto global_objects = node->getGlobalObjects();
@@ -33,14 +74,22 @@ namespace asmgen
             else if (global_object.getValue()->getValueType() == ir::ValueType::Allocate)
             {
                 auto allocate = std::dynamic_pointer_cast<ir::Allocate>(global_object.getValue());
-                if(allocate->isConst()){
+                if (allocate->isConst())
+                {
                     data_ << allocate->getName() << ":" << std::endl;
-                    data_ << ".word " << allocate->getInitValue()->getName() << std::endl;
-                }else{
-
+                    auto init_value = allocate->getInitValue();
+                    data_ << globalStaticValue(init_value);
+                }
+                else
+                {
+                    bss_ << allocate->getName() << ":" << std::endl;
+                    auto init_value = allocate->getInitValue();
+                    bss_ << globalStaticValue(init_value);
                 }
             }
         }
+
+        construct();
     }
 
     void AsmGenerator::construct()

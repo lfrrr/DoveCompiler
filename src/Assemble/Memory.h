@@ -16,7 +16,7 @@ namespace asmgen
         MemoryManager() = default;
         ~MemoryManager() = default;
 
-        Operand newOprand(std::shared_ptr<ir::Value> value)
+        Operand newOperand(std::shared_ptr<ir::Value> value)
         {
             Operand operand = Operand();
             operand.setCount(counter_.next());

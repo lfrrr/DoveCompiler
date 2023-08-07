@@ -34,6 +34,7 @@ namespace ir
             }
             value_type_=ValueType::Add;
         };
+        
         std::string dump(DumpHelper &helper) const override
         {
             std::string output = "Add " + getName() + " = " + operands_[0].getValue()->getName() + " + " + operands_[1].getValue()->getName();
