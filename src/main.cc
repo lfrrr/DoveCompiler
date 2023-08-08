@@ -5,6 +5,8 @@
 #include <SysYLexer.h>
 #include <SysYParser.h>
 
+#include "main.h"
+
 #include "Utils/Configure.h"
 #include "Utils/CONSTANTS.h"
 #include "CodeParser/VisitorImpl.h"
