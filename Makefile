@@ -9,6 +9,9 @@ env/antlr:
 	mkdir -p res/antlr
 	cd res/antlr && curl -O https://www.antlr.org/download/antlr-4.12.0-complete.jar
 
+env/compiler:
+	sudo apt-get install arm-linux-gnueabihf-gcc arm-linux-gnueabihf-ld
+
 includes/runtime: res/conan/conanfile.txt
 	mkdir -p $@
 	cd $@ && conan install ../../res/conan
@@ -35,6 +38,7 @@ clean:
 
 build: build/bin/DoveCompiler
 		@build/bin/DoveCompiler --help
+		cp build/bin/DoveCompiler compiler 
 
 include tests/config.mk
 testFileBase ?= main
@@ -50,6 +54,12 @@ test_cat_asm:
 	cp tests/${testFileBase}.sysy tests/a.cc || g++ -S -O0 -o tests/a.s tests/a.cc
 	cat tests/a.s
 
-test_all:
+include tests/raspi.mk
+
+test_remote:
 	mkdir -p build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Build && make
-	build/bin/DoveCompiler tests/${testFileBase}.sysy -o tests/${testFileBase}.S ${options}
+	build/bin/DoveCompiler tests/${testFileBase}.sysy -o build/bin/${testFileBase}.S ${options}
+	arm-linux-gnueabihf-gcc build/bin/${testFileBase}.S -c -o build/bin/${testFileBase}.o
+	arm-linux-gnueabihf-ld build/bin/${testFileBase}.o -lc -o build/bin/${testFileBase}
+	scp build/bin/${testFileBase} ${user}@${ip}:${path}
+	ssh ${user}@${ip} "cd ${path} && ${path}/${testFileBase}"

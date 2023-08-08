@@ -8,10 +8,16 @@ namespace front
     {
         try
         {
+            ctx_.vRegCounter = utils::Counter(0);
             auto typeID = std::any_cast<ir::PrimitiveDataType::TypeID>(context->funcType()->accept(this));
             std::string funcName = context->Identifier()->getSymbol()->getText();
             ctx_.currentFunction = std::make_shared<ir::Function>(ir::MakePrimitiveDataType(typeID), funcName);
             ctx_.symbolTable->pushScope("function");
+
+            if (context->funcFparamList())
+            {
+                context->funcFparamList()->accept(this);
+            }
 
             if (context->block())
             {
@@ -22,7 +28,9 @@ namespace front
                 ctx_.currentFunction->addBasicBlock(bb);
 
                 context->block()->accept(this);
-            }else{
+            }
+            else
+            {
                 ctx_.currentFunction->setExtern(true);
             }
 
@@ -163,7 +171,7 @@ namespace front
                 params = std::any_cast<std::vector<std::shared_ptr<ir::User>>>(context->funcRparamList()->accept(this));
             }
             auto func = ctx_.compUnit->getFunction(funcName);
-            auto call = std::make_shared<ir::Call>(func, params, "call_" + funcName);
+            auto call = std::make_shared<ir::Call>(func, params, ctx_.newVRegName());
             ctx_.currentBasicBlock->addInstruction(call);
             return std::dynamic_pointer_cast<ir::User>(call);
         }

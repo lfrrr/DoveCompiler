@@ -173,6 +173,10 @@ namespace front
         ctx_.breakBBStack.push(exit_bb);
         ctx_.continueBBStack.push(entry_bb);
 
+        ctx_.trueTargetBBStack.push(entry_bb);
+        ctx_.falseTargetBBStack.push(exit_bb);
+
+        ctx_.symbolTable->pushScope("while");
         ctx_.currentFunction->addBasicBlock(entry_bb);
         ctx_.entryBasicBlock = ctx_.currentBasicBlock;
         ctx_.currentBasicBlock = entry_bb;
@@ -183,14 +187,19 @@ namespace front
         ctx_.entryBasicBlock = ctx_.currentBasicBlock;
         ctx_.currentBasicBlock = body_bb;
         ctx_.exitBasicBlock = exit_bb;
-        auto br = std::make_shared<ir::Br>(entry_label, entry_label->getName());
         context->stmt()->accept(this);
+        auto br = std::make_shared<ir::Br>(entry_label, entry_label->getName());
         ctx_.currentBasicBlock->addInstruction(br);
+
+        ctx_.symbolTable->popScope();
 
         ctx_.currentFunction->addBasicBlock(exit_bb);
         ctx_.entryBasicBlock = ctx_.currentBasicBlock;
         ctx_.currentBasicBlock = exit_bb;
         ctx_.exitBasicBlock = out_exit_bb;
+
+        ctx_.trueTargetBBStack.pop();
+        ctx_.falseTargetBBStack.pop();
 
         ctx_.breakBBStack.pop();
         ctx_.continueBBStack.pop();
@@ -336,13 +345,13 @@ namespace front
                     auto right_prim = std::dynamic_pointer_cast<ir::PrimitiveDataType>(right->getType());
                     if (left_prim->isInt() && right_prim->isInt())
                     {
-                        auto icmp = std::make_shared<ir::Icmp>(icmpid, left, right, "slt");
+                        auto icmp = std::make_shared<ir::Icmp>(icmpid, left, right, ctx_.newVRegName());
                         ctx_.currentBasicBlock->addInstruction(icmp);
                         return std::dynamic_pointer_cast<ir::User>(icmp);
                     }
                     else if (left_prim->isFloat() && right_prim->isFloat())
                     {
-                        auto fcmp = std::make_shared<ir::Fcmp>(fcmpid, left, right, "flt");
+                        auto fcmp = std::make_shared<ir::Fcmp>(fcmpid, left, right, ctx_.newVRegName());
                         ctx_.currentBasicBlock->addInstruction(fcmp);
                         return std::dynamic_pointer_cast<ir::User>(fcmp);
                     }
@@ -416,7 +425,11 @@ namespace front
     {
         try
         {
-            return context->relExp()->accept(this);
+            auto user = std::any_cast<std::shared_ptr<ir::User>>(context->relExp()->accept(this));
+            // auto zero = std::make_shared<ir::StaticValue>(ir::MakePrimitiveDataType(ir::PrimitiveDataType::TypeID::Int32), "zero", 0);
+            // auto icmp = std::make_shared<ir::Icmp>(ir::Icmp::IcmpId::GT, user, zero, ctx_.newVRegName());
+            // ctx_.currentBasicBlock->addInstruction(icmp);
+            return std::dynamic_pointer_cast<ir::User>(user);
         }
         catch (const std::exception &e)
         {
@@ -433,9 +446,9 @@ namespace front
             auto f_label = std::make_shared<ir::Label>(f_bb->getJPLabel());
 
             auto user = std::any_cast<std::shared_ptr<ir::User>>(context->eqExp()->accept(this)); // Icmp, Fcmp or int StatciValue
-            auto br = std::make_shared<ir::Br>(user, t_label, f_label, t_label->getName());
+            auto icmp = std::make_shared<ir::Icmp>(ir::Icmp::IcmpId::GT, user, std::make_shared<ir::StaticValue>(ir::MakePrimitiveDataType(ir::PrimitiveDataType::TypeID::Int32), "zero", 0), ctx_.newVRegName());
+            auto br = std::make_shared<ir::Br>(icmp, t_label, f_label, t_label->getName());
             ctx_.currentBasicBlock->addInstruction(br);
-
 
             return 0;
         }
@@ -462,7 +475,8 @@ namespace front
             ctx_.entryBasicBlock = ctx_.currentBasicBlock;
             ctx_.currentBasicBlock = bb;
             auto user = std::any_cast<std::shared_ptr<ir::User>>(context->eqExp()->accept(this)); // Icmp, Fcmp or int StatciValue
-            auto br = std::make_shared<ir::Br>(user, t_label, f_label, t_label->getName());
+            auto icmp = std::make_shared<ir::Icmp>(ir::Icmp::IcmpId::GT, user, std::make_shared<ir::StaticValue>(ir::MakePrimitiveDataType(ir::PrimitiveDataType::TypeID::Int32), "zero", 0), ctx_.newVRegName());
+            auto br = std::make_shared<ir::Br>(icmp, t_label, f_label, t_label->getName());
             ctx_.currentBasicBlock->addInstruction(br);
 
             return 0;

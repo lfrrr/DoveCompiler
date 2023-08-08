@@ -23,7 +23,7 @@ namespace ir
         Allocate(std::shared_ptr<Type> type, std::string name, bool is_const, bool is_global, std::shared_ptr<StaticValue> val) : Instruction(MakePointerType(type->copy()), std::move(name), 1), type_(std::move(type)), is_const_(is_const), is_global_(is_global), staticvalue_(val) { value_type_ = ValueType::Allocate; }
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = (is_const_ ? "ConstAlc " : "Allocate ") + getName() + ": " + getType()->dump() + " -> " + staticvalue_->dump(helper);
+            std::string output = (is_const_ ? "constalc " : "allocate ") + getName() + ": " + getType()->dump() + " -> " + staticvalue_->dump(helper);
             helper.add(output);
             return output;
         }
@@ -65,10 +65,10 @@ namespace ir
     class Load : public Instruction
     {
     public:
-        Load(std::shared_ptr<Value> ptr, std::string name) : Instruction(std::dynamic_pointer_cast<PointerType>(ptr->getType())->getReferenceType(), std::move(name), 1), ptr_(ptr, this){ value_type_ = ValueType::Load;};
+        Load(std::shared_ptr<Value> ptr, std::string name) : Instruction(std::dynamic_pointer_cast<PointerType>(ptr->getType())->getReferenceType(), std::move(name), 1), ptr_(ptr, this) { value_type_ = ValueType::Load; };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Load " + ptr_.getValue()->getName();
+            std::string output = getName() + " = load " + ptr_.getValue()->getName();
             helper.add(output);
             return output;
         }
@@ -80,11 +80,11 @@ namespace ir
     class Store : public Instruction
     {
     public:
-        Store(std::shared_ptr<Value> val, std::shared_ptr<Value> ptr) : Instruction(MakePrimitiveDataType(PrimitiveDataType::TypeID::Void), "Store", 2), val_(val, this), ptr_(ptr, this){value_type_=ValueType::Store;};
+        Store(std::shared_ptr<Value> val, std::shared_ptr<Value> ptr) : Instruction(MakePrimitiveDataType(PrimitiveDataType::TypeID::Void), "Store", 2), val_(val, this), ptr_(ptr, this) { value_type_ = ValueType::Store; };
 
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Store " + val_.getValue()->getName() + ", " + ptr_.getValue()->getName();
+            std::string output = "store " + val_.getValue()->getName() + ", " + ptr_.getValue()->getName();
             helper.add(output);
             return output;
         }
@@ -97,17 +97,17 @@ namespace ir
     class GetElementPtr : public Instruction
     {
     public:
-        explicit GetElementPtr(std::shared_ptr<User> ptr, std::shared_ptr<Type> type, std::vector<std::shared_ptr<Value>> idx, const std::string &name) : Instruction(MakePointerType(ptr->getType()->copy()), std::move(name), 2), ptr_(ptr, this)
+        explicit GetElementPtr(std::shared_ptr<User> ptr, std::shared_ptr<Type> type, std::vector<std::shared_ptr<User>> idx, const std::string &name) : Instruction(MakePointerType(ptr->getType()->copy()), std::move(name), 2), ptr_(ptr, this)
         {
             for (auto &i : idx)
             {
                 idx_.push_back(Use(i, this));
             }
-            value_type_=ValueType::GetElementPtr;
+            value_type_ = ValueType::GetElementPtr;
         };
         std::string dump(DumpHelper &helper) const
         {
-            std::string output = "GetElementPtr ";
+            std::string output = "getelementptr ";
             output += ptr_.getValue()->getName() + ", ";
             for (Use use : idx_)
             {

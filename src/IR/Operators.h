@@ -11,7 +11,7 @@ namespace ir
     {
     public:
         BinaryOperator(std::shared_ptr<Type> type, std::string name)
-            : Instruction(std::move(type), std::move(name), 2){value_type_=ValueType::BinaryOperator;};
+            : Instruction(std::move(type), std::move(name), 2) { value_type_ = ValueType::BinaryOperator; };
     };
 
     class Add : public Instruction
@@ -32,12 +32,12 @@ namespace ir
             {
                 throw std::runtime_error("Add: Invalid operand types");
             }
-            value_type_=ValueType::Add;
+            value_type_ = ValueType::Add;
         };
-        
+
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Add " + getName() + " = " + operands_[0].getValue()->getName() + " + " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "add " + operands_[0].getValue()->getName() + ", " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -61,11 +61,11 @@ namespace ir
             {
                 throw std::runtime_error("FAdd: Invalid operand types");
             }
-            value_type_=ValueType::FAdd;
+            value_type_ = ValueType::FAdd;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "FAdd " + getName() + " = " + operands_[0].getValue()->getName() + " + " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "fadd " + operands_[0].getValue()->getName() + ", " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -89,11 +89,11 @@ namespace ir
                     throw std::runtime_error("Sub: Invalid operand types");
                 }
             }
-            value_type_=ValueType::Sub;
+            value_type_ = ValueType::Sub;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Sub " + getName() + " = " + operands_[0].getValue()->getName() + " - " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = sub " + operands_[0].getValue()->getName() + ", " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -117,11 +117,11 @@ namespace ir
                     throw std::runtime_error("FSub: Invalid operand types");
                 }
             }
-            value_type_=ValueType::FSub;
+            value_type_ = ValueType::FSub;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "FSub " + getName() + " = " + operands_[0].getValue()->getName() + " - " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "fsub " + operands_[0].getValue()->getName() + ", " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -145,11 +145,11 @@ namespace ir
                     throw std::runtime_error("Mul: Invalid operand types");
                 }
             }
-            value_type_=ValueType::Mul;
+            value_type_ = ValueType::Mul;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Mul " + getName() + " = " + operands_[0].getValue()->getName() + " * " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "mul " + operands_[0].getValue()->getName() + ", " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -173,11 +173,11 @@ namespace ir
                     throw std::runtime_error("FMul: Invalid operand types");
                 }
             }
-            value_type_=ValueType::FMul;
+            value_type_ = ValueType::FMul;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "FMul " + getName() + " = " + operands_[0].getValue()->getName() + " * " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "fmul " + operands_[0].getValue()->getName() + " * " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -201,11 +201,11 @@ namespace ir
                     throw std::runtime_error("SDiv: Invalid operand types");
                 }
             }
-            value_type_=ValueType::SDiv;
+            value_type_ = ValueType::SDiv;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "SDiv " + getName() + " = " + operands_[0].getValue()->getName() + " / " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "sdiv " + operands_[0].getValue()->getName() + " / " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -229,11 +229,11 @@ namespace ir
                     throw std::runtime_error("FDiv: Invalid operand types");
                 }
             }
-            value_type_=ValueType::FDiv;
+            value_type_ = ValueType::FDiv;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "FDiv " + getName() + " = " + operands_[0].getValue()->getName() + " / " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "fdiv " + operands_[0].getValue()->getName() + " / " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };
@@ -257,11 +257,11 @@ namespace ir
                     throw std::runtime_error("SRem: Invalid operand types");
                 }
             }
-            value_type_=ValueType::SRem;
+            value_type_ = ValueType::SRem;
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "SRem " + getName() + " = " + operands_[0].getValue()->getName() + " % " + operands_[1].getValue()->getName();
+            std::string output = getName() + " = " + "srem " + operands_[0].getValue()->getName() + " % " + operands_[1].getValue()->getName();
             helper.add(output);
             return output;
         };

@@ -107,7 +107,7 @@ namespace front
                 ctx_.currentBasicBlock->addInstruction(allocate);
                 context->initVal()->accept(this);
             }
-            
+
             auto sym = std::make_shared<Symbol>(allocate->getName(), allocate);
             ctx_.symbolTable->addSymbolToCurrentScope(varName, sym);
 
@@ -148,6 +148,7 @@ namespace front
                         init_target->setStaticValue(static_value->getFloat());
                     }
                 }
+                return 0;
             }
             else if (init_target->isArray() && static_value->getType()->isPrimitive())
             {
@@ -173,7 +174,7 @@ namespace front
                 }
                 return 0;
             }
-            throw std::runtime_error("ConstDef for Scalar cannot be init.");
+            throw std::runtime_error("Global decl of variable must be static");
         }
         else
         {

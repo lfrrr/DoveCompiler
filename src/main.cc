@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     asm_gen.generate();
     auto asm_code = asm_gen.exportToString();
     std::cout << asm_code << std::endl;
-    asm_gen.exportToFile("a.s");
+    asm_gen.exportToFile(config::get().dst_file_path);
 
     std::cout << "Bye" << std::endl;
     return 0;

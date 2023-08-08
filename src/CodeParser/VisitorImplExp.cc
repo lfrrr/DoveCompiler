@@ -182,7 +182,11 @@ namespace front
                     }
                     else
                     {
-                        // TODO add getelemntptr and Stores
+                        auto getelementptr = std::make_shared<ir::GetElementPtr>(symuser, symuser->getType(), users, ctx_.newVRegName());
+                        ctx_.currentBasicBlock->addInstruction(getelementptr);
+                        auto load = std::make_shared<ir::Load>(getelementptr, ctx_.newVRegName());
+                        ctx_.currentBasicBlock->addInstruction(load);
+                        return std::dynamic_pointer_cast<ir::User>(load);
                     }
                 }
             }

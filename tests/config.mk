@@ -1,1 +1,1 @@
-testFileBase=condition
+testFileBase=blockterm

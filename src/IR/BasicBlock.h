@@ -46,7 +46,7 @@ namespace ir
     };
     std::string dump(DumpHelper &helper) const override
     {
-      auto s = "BasicBlock " + getName() + ": " + getStringifyBlockType();
+      auto s =  getName() + ":";
       helper.add(s);
       helper.indent();
       for (auto &inst : instructions_)

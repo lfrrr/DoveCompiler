@@ -33,6 +33,7 @@ namespace front
                 funcDef->accept(this);
                 ctx_.compUnit->addGlobalObject(ctx_.currentFunction);
             }
+            
             return ctx_.compUnit;
         }
         catch (std::exception &e)

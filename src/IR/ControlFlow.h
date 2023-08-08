@@ -23,11 +23,12 @@ namespace ir
         };
         std::string dump(DumpHelper &helper) const override;
         void addBasicBlock(std::shared_ptr<BasicBlock> basic_block);
-        std::shared_ptr<std::vector<std::shared_ptr<BasicBlock>>> getBasicBlocks();
+        std::vector<std::shared_ptr<BasicBlock>> getBasicBlocks();
 
         void setExtern(bool is_extern)
         {
-            if(is_extern){
+            if (is_extern)
+            {
                 basic_blocks_.clear();
             }
             is_extern_ = is_extern;
@@ -134,7 +135,7 @@ namespace ir
 
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Icmp " + getOperatorLiterial(comp_id_) + " " + lhs_.getValue()->getName() + " " + rhs_.getValue()->getName() + " ";
+            std::string output = getName() + " = icmp " + lhs_.getValue()->getName() + " " + getOperatorLiterial(comp_id_) + " " + rhs_.getValue()->getName() + " ";
             helper.add(output);
             return output;
         }
@@ -188,7 +189,7 @@ namespace ir
 
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Fcmp " + getOperatorLiterial(comp_id_) + " " + lhs_.getValue()->getName() + " " + rhs_.getValue()->getName() + " ";
+            std::string output = getName() + " fcmp " + lhs_.getValue()->getName() + " " + getOperatorLiterial(comp_id_) + " " + rhs_.getValue()->getName() + " ";
             helper.add(output);
             return output;
         }
@@ -210,7 +211,7 @@ namespace ir
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Return " + ret_val_.getValue()->getName() + " ";
+            std::string output = "ret " + ret_val_.getValue()->getName() + " ";
             helper.add(output);
             return output;
         }
@@ -246,7 +247,7 @@ namespace ir
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Label " + getName() + "";
+            std::string output = "label " + getName() + "";
             // helper.add(output);
             return output;
         }
@@ -273,7 +274,7 @@ namespace ir
         };
         std::string dump(DumpHelper &helper) const override
         {
-            std::string output = "Call " + callee_->getName() + ", ";
+            std::string output = getName() + " = call " + callee_->getName() + ", ";
             for (auto &arg : args_)
             {
                 output += arg.getValue()->getName() + ", ";
@@ -302,10 +303,10 @@ namespace ir
         };
         std::string dump(DumpHelper &helper) const
         {
-            std::string output = "Br ";
+            std::string output = "br ";
             if (has_condition_)
             {
-                output += condition_.getValue()->getName() + ", " + t_label_.getValue()->getName() + ", " + f_label_.getValue()->getName() + " ";
+                output += condition_.getValue()->getName() + ", " + t_label_.getValue()->dump(helper) + ", " + f_label_.getValue()->dump(helper) + " ";
             }
             else
             {

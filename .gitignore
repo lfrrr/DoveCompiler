@@ -5,6 +5,7 @@
 CMakeCache.txt
 res/antlr/antlr-4.12.0-complete.jar
 res/antlr/.antlr
+/tests/raspi.mk
 
 # Prerequisites
 *.d
