@@ -1,0 +1,24 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "antlr4-cppruntime:fPIC=True\nantlr4-cppruntime:shared=False",
+    "requires": [
+     "1"
+    ],
+    "path": "../../res/conan/conanfile.txt",
+    "context": "host"
+   },
+   "1": {
+    "ref": "antlr4-cppruntime/4.12.0",
+    "options": "fPIC=True\nshared=False",
+    "package_id": "958c3b440426d3de5c0972e7f507dbde401ac1a5",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Debug\ncompiler=gcc\ncompiler.libcxx=libstdc++11\ncompiler.version=11\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n"
+}
